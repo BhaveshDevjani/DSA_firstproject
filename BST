@@ -1,0 +1,210 @@
+#include<stdio.h>
+#include<stdlib.h>
+struct bstnode
+{
+       int id;
+       struct bstnode *lchild,*rchild;
+       }*temp;
+//inserting 
+struct bstnode * insert(struct bstnode *p,int val)
+{
+       struct bstnode *node,*parent;
+       node=(struct bstnode *)malloc(sizeof(struct bstnode));
+       node->id=val;
+       node->lchild=node->rchild=NULL;
+       if(p==NULL)
+          p=node;
+       else
+       {
+           temp=p;
+           while(temp!=NULL)
+           {
+               parent=temp;
+               if(temp->id>val)
+                  temp=temp->lchild;
+               else
+                  temp=temp->rchild;
+                  }
+           if(parent->id>val)
+               parent->lchild=node;
+           else
+               parent->rchild=node;
+               }
+           return p;
+}
+//traversal
+void inorder(struct bstnode *p)
+{
+     if(p!=NULL)
+     {
+         inorder(p->lchild);
+         printf("%d  ",p->id);
+         inorder(p->rchild);
+         }
+         }
+//searching
+struct bstnode * search(struct bstnode *p, int key,struct bstnode **parent)
+{
+       temp=p;
+       *parent=NULL;
+       while(temp!=NULL)
+       {
+           if(temp->id==key)
+              return temp;
+           else
+           {
+               *parent=temp;
+              if(temp->id>key)
+                  temp=temp->lchild;
+              else
+                  temp=temp->rchild;
+               }
+           }
+       return (NULL);
+       }
+//counting
+int count(struct bstnode *p)
+{
+    if (p==NULL) return 0;
+    else if((p->lchild==NULL)&& (p->rchild==NULL)) return 1;
+    else return(1+(count(p->lchild)+count(p->rchild)));
+    }
+//deleting
+struct bstnode * del(struct bstnode * p,int val)
+{
+       struct bstnode *x,*parent,*L,*R;
+       x=search(p,val,&parent);
+       if(x==NULL)
+       {
+            printf("No such node");
+            return p;
+            }
+       if(x==p)
+       {
+            printf("Deleting Root node: %d",val);
+            L=x->lchild;
+            R=x->rchild;
+            if(L!=NULL)
+            {
+               p=L;
+               temp=L;
+               while(temp->rchild!=NULL)
+                 temp=temp->rchild;
+               temp->rchild=R;
+               }
+            else    
+               p=R;
+            x->lchild=NULL;
+            x->rchild=NULL;
+            free(x);
+            return p;
+        }
+       if((x->lchild==NULL)&&(x->rchild==NULL))
+       {
+            printf("Deleting Leaf node: %d",val);
+            if(parent->lchild==x)
+                parent->lchild=NULL;
+            else
+                parent->rchild=NULL;
+            free(x);
+            return p;
+            }
+       if((x->lchild!=NULL)&&(x->rchild==NULL))
+       {
+            printf("Deleting node with only left child: %d",val);
+            if(parent->lchild==x)
+                parent->lchild=x->lchild;
+            else
+                parent->rchild=x->lchild;
+            x->lchild=NULL;
+            free(x);
+            return p;
+              }
+        if((x->lchild==NULL)&&(x->rchild!=NULL))
+       {
+            printf("Deleting node with only right child: %d",val);
+            if(parent->lchild==x)
+                parent->lchild=x->rchild;
+            else
+                parent->rchild=x->rchild;
+            x->rchild=NULL;
+            free(x);
+            return p;
+              }
+       if((x->lchild!=NULL)&&(x->rchild!=NULL))
+       {
+            printf("Deleting node with 2 children: %d",val);
+            L=x->lchild;
+            R=x->rchild;
+            if(parent->lchild==x)
+                parent->lchild=L;
+            else
+                parent->rchild=L;
+            temp=L;
+            while(temp->rchild!=NULL)
+                 temp=temp->rchild;
+            temp->rchild=R;
+            x->lchild=NULL;
+            x->rchild=NULL;
+            free(x);
+            return p;
+       }
+       }
+main()
+{
+      struct bstnode *root=NULL,*t;
+      int id,ch;
+      do
+      {
+          printf("\n1.Insert\n2.Display\n3.Search\n4.Count\n5.Delete\n6.Exit\nYour choice:");
+          scanf("%d",&ch);
+          switch(ch)
+          {
+            case 1:
+            printf("Enter the id:");
+            scanf("%d",&id);
+            root=insert(root,id);
+            break;
+            case 2:
+            if (root==NULL)
+                printf("Tree is empty..Cannot display");
+            else
+                 inorder(root);
+            break;
+            case 3:
+             if (root==NULL)
+               printf("Tree is empty... Cannot search");
+             else
+             {
+                printf("Enter the search id:");
+                 scanf("%d",&id);
+                 temp=search(root,id,&t);
+                 if(temp==NULL)
+                   printf("ID not present");
+                 else
+                    printf("ID is present at %u",temp);
+                 }
+                 break;
+                 case 4:
+                 if (root==NULL)
+                       printf("Tree is empty...No nodes");
+                 else
+   printf("Total number of node in the tree is %d",count(root));
+break;
+ case 5:
+if (root==NULL)
+      printf("Tree is empty... Cannot delete");
+else
+{
+     printf("Enter the id to delete:");
+     scanf("%d",&id);
+     root=del(root,id);
+  }
+  break;
+  case 6:
+        break;
+  default:
+        printf("Invalid choice");
+   }                      
+}while(ch!=6);
+}
